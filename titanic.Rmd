@@ -1,0 +1,104 @@
+---
+title: "titanic"
+author: "Dinesh"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+```{r}
+# Import libraries
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(GGally)
+
+# Load data
+train <- read.csv("train_and_test2.csv")
+
+# Convert categorical variables to numeric
+train$Sex <- as.numeric(as.factor(train$Sex))
+train$Embarked <- as.numeric(as.factor(train$Embarked))
+```
+
+
+# 1. Box Plot of Age by Survival Status
+
+The age distribution of the passengers who survived and those who did not is displayed in this box plot. It draws attention to the fact that survivors' median age is somewhat lower than that of non-survivors, offering information about the age distribution of survivors.
+
+```{r}
+
+ggplot(train, aes(x = as.factor(Survived), y = Age, fill = as.factor(Survived))) +
+  geom_boxplot() +
+  labs(title = "Age Distribution by Survival Status", x = "Survival Status", y = "Age") +
+  scale_fill_discrete(name = "Survived", labels = c("No", "Yes")) +
+  theme_minimal(base_size = 15)
+```
+
+# 2. Density Plot of Fare by Passenger Class
+
+This density plot illustrates the distribution of fares paid by passengers in different classes. It shows that first-class passengers paid significantly higher fares compared to second and third-class passengers.
+
+```{r}
+ggplot(train, aes(x = as.factor(sibsp), fill = as.factor(Survived))) +
+  geom_bar(position = "dodge") +
+  labs(title = "Number of Siblings/Spouses Aboard by Survival Status", x = "Number of Siblings/Spouses Aboard", y = "Count") +
+  scale_fill_discrete(name = "Survived", labels = c("No", "Yes")) +
+  theme_minimal(base_size = 15)
+```
+
+# 3. Bar Plot of SibSp by Survival Status
+
+This bar plot shows the number of siblings or spouses aboard for passengers who survived and those who did not. It reveals patterns in family travel and survival rates.
+
+
+```{r}
+ggplot(train, aes(x = as.factor(sibsp), fill = as.factor(Survived))) +
+  geom_bar(position = "dodge") +
+  labs(title = "Number of Siblings/Spouses Aboard by Survival Status", x = "Number of Siblings/Spouses Aboard", y = "Count") +
+  scale_fill_discrete(name = "Survived", labels = c("No", "Yes")) +
+  theme_minimal(base_size = 15)
+```
+
+# 4. Violin Plot of Age by Passenger Class
+
+The distribution of ages across the various passenger classes is seen in this violin plot. It displays the age distribution and density within each class, showing that first-class travellers are often older.
+
+```{r}
+ggplot(train, aes(x = as.factor(Pclass), y = Age, fill = as.factor(Pclass))) +
+  geom_violin(trim = FALSE) +
+  labs(title = "Age Distribution by Passenger Class", x = "Passenger Class", y = "Age") +
+  scale_fill_discrete(name = "Passenger Class", labels = c("1st", "2nd", "3rd")) +
+  theme_minimal(base_size = 15)
+
+```
+
+
+
+# 5. Pair Plot
+
+The pairwise relationships between each of the dataset's selected variables are shown in this pair plot. The distribution of a single variable is displayed by each diagonal plot, while scatterplots of pairs of variables coloured according to survival status are displayed by the off-diagonal plots. This thorough visual aid facilitates the investigation of possible relationships and trends between all the variables.
+
+```{r}
+# Convert categorical variables to factors
+train$Sex <- as.factor(train$Sex)
+train$Embarked <- as.factor(train$Embarked)
+train$Survived <- as.factor(train$Survived)
+train$Pclass <- as.factor(train$Pclass)
+
+# Select relevant columns
+columns <- c("Pclass", "Survived", "Age", "sibsp", "Parch", "Fare", "Sex", "Embarked")
+
+# Create pair plot
+ggpairs(train[, columns], 
+        aes(color = Survived, alpha = 0.5), 
+        upper = list(continuous = wrap("cor", size = 3))) +
+  labs(title = "Pair Plot of Titanic Dataset") +
+  theme_minimal(base_size = 15)
+```
+
+
+
+
+
+
+
