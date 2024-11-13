@@ -1,0 +1,149 @@
+---
+title: "animated graphs"
+author: "Dinesh"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r}
+
+
+# Load necessary libraries for data manipulation, visualization, and animation
+library(gapminder)
+library(ggplot2)
+library(gganimate)
+library(gifski)
+library(dplyr)
+```
+
+# Creating a Static Plot
+
+```{r}
+# Define a color palette for countries
+country_colors <- c("#7fc97f", "#beaed4", "#fdc086", "#ffff99", "#386cb0", "#f0027f", "#bf5b17", "#666666")
+country_colors <- scales::hue_pal()(length(unique(gapminder$country)))
+
+# Create a static scatter plot showing the relationship between GDP per capita and life expectancy for the year 1952
+ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) + 
+  geom_point(alpha = 0.7, show.legend = FALSE) + 
+  scale_colour_manual(values = country_colors) + scale_size(range = c(2, 12)) + scale_x_log10() +
+  facet_wrap(~continent) +
+  labs(title = 'Year: 1952-2007', x = 'GDP per capita', y = 'Life expectancy')
+
+# Save the static plot as a PNG file
+ggsave('plot_gdpPercap_lifeExp_static.png', width = 8, height = 8)
+```
+
+
+# Developing an Animated Plot
+
+```{r}
+# This section will create an animated plot to visualize the changes in GDP per capita and life expectancy over time from 1952 to 2007.
+
+
+p1 <- ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) + 
+  geom_point(alpha = 0.7, show.legend = FALSE) + 
+  scale_colour_discrete() + scale_size(range = c(2, 12)) + scale_x_log10() +
+  facet_wrap(~continent) +
+  labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'Life expectancy') +
+  transition_time(year) + ease_aes('linear')
+
+# Generate and save the animation as a GIF file
+anim_save("plot_gdpPercap_lifeExp_animated.gif", animation = animate(p1))
+
+# Display the animated plot as an image
+htmltools::img(src = "plot_gdpPercap_lifeExp_animated.gif", width = "800", height = "600")
+```
+
+# Alternative Animated Visualization
+
+```{r}
+
+# This alternative animated plot will visualize the relationship between population size and life expectancy over time from 1952 to 2007.
+
+# Create the animated plot with transitions based on population size and life expectancy
+p2 <- ggplot(gapminder, aes(pop, lifeExp, size = pop, colour = country)) + 
+  geom_point(alpha = 0.7, show.legend = FALSE) + 
+  scale_colour_discrete() + scale_size(range = c(2, 12)) +
+  facet_wrap(~continent) +
+  labs(title = 'Year: {frame_time}', x = 'Population', y = 'Life expectancy') +
+  transition_time(year) + ease_aes('linear')
+
+# Generate and save the animation as a GIF file
+anim_save("plot_pop_lifeExp_animated.gif", animation = animate(p2))
+
+# Display the animated plot as an image
+htmltools::img(src = "plot_pop_lifeExp_animated.gif", width = "800", height = "600")
+```
+
+# Animated Plot with Horizontal Layout 
+
+```{r}
+
+# Generate an animated plot with a horizontal layout (1 row × 5 columns)
+p2_horizontal <- p1 + 
+  facet_wrap(~continent, nrow = 1, ncol = 5)
+
+# Save the animated plot with a horizontal layout as a GIF file
+anim_save("plot_gdpPercap_lifeExp_animated_horizontal.gif", animation = animate(p2_horizontal))
+
+# Display the animated plot with a horizontal layout 
+htmltools::img(src = "plot_gdpPercap_lifeExp_animated_horizontal.gif", width = "1600", height = "400")
+```
+
+# Animated Plot with Vertical Layout
+
+```{r}
+
+# Generate an animated plot with a vertical layout (1 column × 5 rows)
+p3_vertical <- p1 + 
+  facet_wrap(~continent, ncol = 1)
+
+# Save the animated plot with a vertical layout as a GIF file
+anim_save("plot_gdpPercap_lifeExp_animated_vertical.gif", animation = animate(p3_vertical))
+
+# Display the animated plot with a vertical layout in the document
+htmltools::img(src = "plot_gdpPercap_lifeExp_animated_vertical.gif", width = "400", height = "1600")
+```
+
+# Animated Plot of Population vs. Life Expectancy default font size
+
+```{r}
+
+# Create an animated plot showing the relationship between population size and life expectancy over time
+p4 <- ggplot(gapminder, aes(pop, lifeExp, size = pop, colour = country)) + 
+  geom_point(alpha = 0.7, show.legend = FALSE) + 
+  scale_colour_manual(values = country_colors) + 
+  scale_size(range = c(2, 12)) +
+  facet_wrap(~continent) +
+  labs(title = 'Year: {frame_time}', x = 'Population', y = 'Life expectancy') +
+  transition_time(year) + 
+  ease_aes('linear')
+
+# Save the animated plot as a GIF file
+anim_save("plot_pop_lifeExp_animated.gif", animation = animate(p4))
+
+# Display the animated plot in the document
+htmltools::img(src = "plot_pop_lifeExp_animated.gif", width = "800", height = "600")
+```
+
+# Animated Plot of Population vs. Life Expectancy with Bigger Font Size
+
+```{r}
+# Create an animated plot with a larger font size showing the relationship between population size and life expectancy over time
+p4_bigfont <- p4 + 
+  theme(text = element_text(size = 20))  # Increase font size
+
+# Save the animated plot with a larger font size as a GIF file
+anim_save("plot_pop_lifeExp_animated_bigfont.gif", animation = animate(p4_bigfont))
+
+# Display the animated plot with a larger font size in the document
+htmltools::img(src = "plot_pop_lifeExp_animated_bigfont.gif", width = "800", height = "600")
+```
+
+
+
+
